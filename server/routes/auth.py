@@ -1,15 +1,15 @@
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 import bcrypt
 
 from models.user import User
-from database import db
+from database import get_db
 from pydantic_schema.user_create import UserCreate
 from fastapi import APIRouter
 
 router = APIRouter()
 
 @router.post("/signup")
-async def signup(user: UserCreate):
+async def signup(user: UserCreate, db = Depends(get_db)):
 
     if not user.username or not user.password or not user.email:
         raise HTTPException(status_code=400, detail="Username, password and email are required")
