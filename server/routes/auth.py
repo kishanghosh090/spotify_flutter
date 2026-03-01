@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException
 import bcrypt
+from sqlalchemy.orm import Session
 
 from models.user import User
 from database import get_db
@@ -9,7 +10,7 @@ from fastapi import APIRouter
 router = APIRouter()
 
 @router.post("/signup")
-async def signup(user: UserCreate, db = Depends(get_db)):
+async def signup(user: UserCreate, db: Session = Depends(get_db)):
 
     if not user.username or not user.password or not user.email:
         raise HTTPException(status_code=400, detail="Username, password and email are required")
