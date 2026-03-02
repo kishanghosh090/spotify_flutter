@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:client/core/constant/base_url.dart';
 import 'package:client/core/faliure/failure.dart';
 import 'package:client/features/auth/model/user_model.dart';
 import 'package:fpdart/fpdart.dart';
@@ -12,7 +13,7 @@ class AuthRemoteRepository {
   }) async {
     try {
       final reponse = await http.post(
-        Uri.parse("http://127.0.0.1:8000/api/v1/auth/signup"),
+        Uri.parse("${BaseUrl.baseUrl}/auth/signup"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "email": email,
@@ -36,7 +37,7 @@ class AuthRemoteRepository {
   }) async {
     try {
       final reponse = await http.post(
-        Uri.parse("http://127.0.0.1:8000/api/v1/auth/login"),
+        Uri.parse("${BaseUrl.baseUrl}/auth/login"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "password": password}),
       );
@@ -44,9 +45,7 @@ class AuthRemoteRepository {
         throw Exception("Failed to login");
       }
       final body = jsonDecode(reponse.body) as Map<String, dynamic>;
-      return Right(
-        UserModel.fromJson(jsonEncode(body)),
-      );
+      return Right(UserModel.fromJson(jsonEncode(body)));
     } catch (e) {
       return Left(Failure(e.toString()));
     }
