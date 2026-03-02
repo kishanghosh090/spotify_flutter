@@ -1,4 +1,5 @@
 import 'package:client/core/theme/app_pallete.dart';
+import 'package:client/features/auth/repository/auth_remote_repository.dart';
 import 'package:client/features/auth/view/widgets/auth_button.dart';
 import 'package:client/features/auth/view/widgets/custom_field.dart';
 import 'package:flutter/material.dart';
@@ -50,13 +51,24 @@ class _SigninPageState extends State<SigninPage> {
                 obscureText: true,
               ),
               const SizedBox(height: 25),
-              AuthButton(text: "Sign In", onPressed: () {}),
+              AuthButton(
+                text: "Sign In",
+                onPressed: () async {
+                  final authRemoteRepository = await AuthRemoteRepository();
+                  authRemoteRepository.login(
+                    email: emailController.text,
+                    password: passwordController.text,
+                  );
+                },
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text("Don't have an account?"),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: const Text(
                       "Sign Up",
                       style: TextStyle(

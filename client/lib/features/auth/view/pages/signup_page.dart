@@ -1,4 +1,6 @@
 import 'package:client/core/theme/app_pallete.dart';
+import 'package:client/features/auth/repository/auth_remote_repository.dart';
+import 'package:client/features/auth/view/pages/signin_page.dart';
 import 'package:client/features/auth/view/widgets/auth_button.dart';
 import 'package:client/features/auth/view/widgets/custom_field.dart';
 import 'package:flutter/material.dart';
@@ -52,13 +54,39 @@ class _SignupPageState extends State<SignupPage> {
                 obscureText: true,
               ),
               const SizedBox(height: 25),
-              AuthButton(text: "Sign Up", onPressed: () {}),
+              AuthButton(
+                text: "Sign Up",
+                onPressed: () async {
+                  final authRemoteRepository = AuthRemoteRepository();
+                  final res = await authRemoteRepository.signup(
+                    email: emailController.text,
+                    username: nameController.text,
+                    password: passwordController.text,
+                  );
+
+                  res.fold(
+                    (l) => ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(l))),
+                    (r) => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Signup successful")),
+                    ),
+                  );
+                },
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text("Already have an account?"),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SigninPage(),
+                        ),
+                      );
+                    },
                     child: const Text(
                       "Sign In",
                       style: TextStyle(
