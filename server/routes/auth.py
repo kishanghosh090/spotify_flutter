@@ -7,6 +7,8 @@ from database import get_db
 from pydantic_schema.user_create import UserCreate
 from fastapi import APIRouter
 
+from pydantic_schema.user_login import UserLogin
+
 router = APIRouter()
 
 @router.post("/signup")
@@ -30,3 +32,18 @@ async def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return {"message": "User created successfully", "user_id": str(new_user.id)}
+
+@router.post("/login")
+async def login(user: UserLogin, db: Session = Depends(get_db)):
+
+    if not user.email or not user.password:
+        raise HTTPException(status_code=400, detail="Email and password are required")
+    
+    existing_user = db.query(User).filter(User.email == user.email).first()
+    if not existing_user:
+        raise HTTPException(status_code=400, detail="Invalid email")
+    
+    if not bcrypt.checkpw(user.password.encode("utf-8"), existing_user.password):
+        raise HTTPException(status_code=400, detail="Invalid password")
+    
+    return {"message": "Login successful", "user_id": str(existing_user.id)}
