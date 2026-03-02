@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:client/core/faliure/failure.dart';
+import 'package:client/features/auth/model/user_model.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 
 class AuthRemoteRepository {
-  Future<Either<String, Map<String, dynamic>>> signup({
+  Future<Either<Failure, UserModel>> signup({
     required String email,
     required String username,
     required String password,
@@ -18,16 +20,23 @@ class AuthRemoteRepository {
           "password": password,
         }),
       );
-      if (reponse.statusCode != 201) {
+      if (reponse.statusCode != 201 && reponse.statusCode != 200) {
         throw Exception("Failed to signup");
       }
-      return Right(jsonDecode(reponse.body) as Map<String, dynamic>);
+      final body = jsonDecode(reponse.body) as Map<String, dynamic>;
+      return Right(
+        UserModel(
+          id: body["id"],
+          email: body["email"],
+          username: body["username"],
+        ),
+      );
     } catch (e) {
-      return Left(e.toString());
+      return Left(Failure(e.toString()));
     }
   }
 
-  Future<Either<String, Map<String, dynamic>>> login({
+  Future<Either<Failure, Map<String, dynamic>>> login({
     required String email,
     required String password,
   }) async {
@@ -42,7 +51,7 @@ class AuthRemoteRepository {
       }
       return Right(jsonDecode(reponse.body) as Map<String, dynamic>);
     } catch (e) {
-      return Left(e.toString());
+      return Left(Failure(e.toString()));
     }
   }
 }

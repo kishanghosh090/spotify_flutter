@@ -67,11 +67,12 @@ class _SignupPageState extends State<SignupPage> {
                   res.fold(
                     (l) => ScaffoldMessenger.of(
                       context,
-                    ).showSnackBar(SnackBar(content: Text(l))),
+                    ).showSnackBar(SnackBar(content: Text(l.message))),
                     (r) => ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Signup successful")),
                     ),
                   );
+                  print(res);
                 },
               ),
               Row(
