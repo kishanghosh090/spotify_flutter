@@ -24,19 +24,13 @@ class AuthRemoteRepository {
         throw Exception("Failed to signup");
       }
       final body = jsonDecode(reponse.body) as Map<String, dynamic>;
-      return Right(
-        UserModel(
-          id: body["id"],
-          email: body["email"],
-          username: body["username"],
-        ),
-      );
+      return Right(UserModel.fromJson(jsonEncode(body)));
     } catch (e) {
       return Left(Failure(e.toString()));
     }
   }
 
-  Future<Either<Failure, Map<String, dynamic>>> login({
+  Future<Either<Failure, UserModel>> login({
     required String email,
     required String password,
   }) async {
@@ -49,7 +43,10 @@ class AuthRemoteRepository {
       if (reponse.statusCode != 200) {
         throw Exception("Failed to login");
       }
-      return Right(jsonDecode(reponse.body) as Map<String, dynamic>);
+      final body = jsonDecode(reponse.body) as Map<String, dynamic>;
+      return Right(
+        UserModel.fromJson(jsonEncode(body)),
+      );
     } catch (e) {
       return Left(Failure(e.toString()));
     }

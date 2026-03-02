@@ -54,10 +54,27 @@ class _SigninPageState extends State<SigninPage> {
               AuthButton(
                 text: "Sign In",
                 onPressed: () async {
-                  final authRemoteRepository = await AuthRemoteRepository();
-                  authRemoteRepository.login(
+                  final authRemoteRepository = AuthRemoteRepository();
+                  final result = await authRemoteRepository.login(
                     email: emailController.text,
                     password: passwordController.text,
+                  );
+                  result.fold(
+                    (failure) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(failure.message)));
+                    },
+                    (user) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Login successful")),
+                      );
+                      // Navigator.pushNamedAndRemoveUntil(
+                      //   context,
+                      //   "/home",
+                      //   (route) => false,
+                      // );
+                    },
                   );
                 },
               ),
